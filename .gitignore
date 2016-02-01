@@ -1,0 +1,7 @@
+/builds
+/Makefile
+*Dict.h
+*Dict.cxx
+*.pdf
+*.root
+*.png
