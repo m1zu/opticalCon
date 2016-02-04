@@ -54,6 +54,7 @@ public:
 
   template <class T>
   static std::vector<T*> extractFromFile(const QString& fileName, const QRegExp& nameFilter) {
+    TVirtualPad* pad = gPad;
     TFile file(qPrintable(fileName));
     gROOT->cd();
     std::vector<T*> objects = extractFromObject<T>(&file, nameFilter);
@@ -61,6 +62,7 @@ public:
     for (unsigned int i = 0; i < objects.size(); ++i)
       objectClones[i] = static_cast<T*>(objects[i]->Clone());
     file.Close();
+    pad->cd();
     return objectClones;
   }
 
