@@ -48,7 +48,12 @@ public:
   static int rootMarkerOpen(int i);
 
   template <class T>
-  static std::vector<T*> extractFromFile(const QString& fileName, const QRegExp& nameFilter = QRegExp()) {
+  static std::vector<T*> extractFromFile(const QString& fileName, const QString& nameFilter = ".*") {
+    return  extractFromFile<T>(fileName, QRegExp(nameFilter));
+  }
+
+  template <class T>
+  static std::vector<T*> extractFromFile(const QString& fileName, const QRegExp& nameFilter) {
     TFile file(qPrintable(fileName));
     gROOT->cd();
     std::vector<T*> objects = extractFromObject<T>(&file, nameFilter);
