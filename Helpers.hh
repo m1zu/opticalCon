@@ -95,7 +95,6 @@ public:
     return objects;
   }
 
-
   template <class T>
   static void setFontSize(T* h, double size, double titleOffset = -1) {
     h->GetXaxis()->SetLabelSize(size);
@@ -104,6 +103,8 @@ public:
     h->GetYaxis()->SetTitleSize(size);
     h->GetXaxis()->SetTitleOffset(titleOffset < 0 ? 30. / size : titleOffset);
     h->GetYaxis()->SetTitleOffset(titleOffset < 0 ? 30. / size : titleOffset);
+    h->GetYaxis()->SetTickLength(gStyle->GetTickLength("Y"));
+    h->GetXaxis()->SetTickLength(h->GetYaxis()->GetTickLength() * gStyle->GetCanvasDefW() / gStyle->GetCanvasDefH());
   }
   static void setFontSize(TH2* h, double size, double titleOffset = -1);
 

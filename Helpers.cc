@@ -1,6 +1,7 @@
 #include "Helpers.hh"
 
 #include <TColor.h>
+#include <TPaletteAxis.h>
 
 void Helpers::setRootStyle()
 {
@@ -8,7 +9,7 @@ void Helpers::setRootStyle()
   int fontSize = 30;
 
   gStyle->SetCanvasDefH(1100);
-  gStyle->SetCanvasDefW(1760);
+  gStyle->SetCanvasDefW(1100 * 16 / 10);
   gStyle->SetStripDecimals(false);
   gStyle->SetFrameFillColor(0);
   gStyle->SetPadColor(0);
@@ -36,8 +37,12 @@ void Helpers::setRootStyle()
   gStyle->SetTitleFont(fontStyle, "XYZ");
   gStyle->SetTitleSize(fontSize, "XYZ");
   gStyle->SetTitleOffset(2.5, "XYZ");
+  gStyle->SetTickLength(0.005, "YZ");
+  gStyle->SetTickLength(gStyle->GetTickLength("Y") * gStyle->GetCanvasDefW() / gStyle->GetCanvasDefH(), "X");
   gStyle->SetPadGridX(1);
   gStyle->SetPadGridY(1);
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
   gStyle->SetGridColor(kGray);
   //gStyle->SetLineStyleString(11, "41 20");
   gStyle->SetGridStyle(kDotted);
@@ -45,8 +50,6 @@ void Helpers::setRootStyle()
   gStyle->SetPaintTextFormat(".2f");
   gStyle->SetNumberContours(99);
   gStyle->SetFrameBorderMode(0);
-  gStyle->SetCanvasDefH(1100);
-  gStyle->SetCanvasDefW(1100 * 16 / 10);
 
   TColor::InitializeColors();
   double stops[9] = { 0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000};
@@ -142,6 +145,18 @@ void Helpers::setFontSize(TH2* h, double size, double titleOffset)
   setFontSize<TH2>(h, size, titleOffset);
   h->GetZaxis()->SetLabelSize(size);
   h->GetZaxis()->SetTitleSize(size);
+  h->GetZaxis()->SetTitleOffset(size);
+  TPaletteAxis* palette = static_cast<TPaletteAxis*>(h->GetListOfFunctions()->FindObject("palette"));
+  if (palette) {
+    palette->SetLabelSize(size);
+    palette->SetTitleSize(size);
+    palette->SetTitleOffset(titleOffset);
+    palette->GetAxis()->SetTickSize(gStyle->GetTickLength("Y"));
+    palette->SetX1NDC(0.905);
+    palette->SetX2NDC(0.915);
+    palette->SetY1NDC(0.1);
+    palette->SetY2NDC(0.9);
+  }
 }
 
 void Helpers::drawProjection(RootPadEvent event, TVirtualPad* destinationPad, TH2* h, Helpers::ProjectionAxis axis, int nBins)
