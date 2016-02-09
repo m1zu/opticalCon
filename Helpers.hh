@@ -99,17 +99,17 @@ public:
   }
 
   template <class T>
-  static void setFontSize(T* h, double size, double titleOffset = -1) {
+  static void setFontSize(T* h, double size, double titleOffsetX = -1, double titleOffsetY = -1) {
     h->GetXaxis()->SetLabelSize(size);
     h->GetYaxis()->SetLabelSize(size);
     h->GetXaxis()->SetTitleSize(size);
     h->GetYaxis()->SetTitleSize(size);
-    h->GetXaxis()->SetTitleOffset(titleOffset < 0 ? 30. / size : titleOffset);
-    h->GetYaxis()->SetTitleOffset(titleOffset < 0 ? 30. / size : titleOffset);
+    h->GetXaxis()->SetTitleOffset(titleOffsetX < 0 ? 30. / size : titleOffsetX);
+    h->GetYaxis()->SetTitleOffset(titleOffsetY < 0 ? 30. / size : titleOffsetY);
     h->GetYaxis()->SetTickLength(gStyle->GetTickLength("Y"));
     h->GetXaxis()->SetTickLength(h->GetYaxis()->GetTickLength() * gStyle->GetCanvasDefW() / gStyle->GetCanvasDefH());
   }
-  static void setFontSize(TH2* h, double size, double titleOffset = -1);
+  static void setFontSize(TH2* h, double size, double titleOffsetX = -1, double titleOffsetY = -1);
 
   static void setPalettePosition(TH2* h, double x1 = 0.905, double x2 = 0.915);
 
@@ -122,6 +122,8 @@ public:
   static TH1D* projection(ProjectionAxis, const TH2*, const char* name = "_px", int firstBin = 0, int lastBin = -1, Option_t* = "");
 
   static void RedrawFrameBox();
+
+  static void writePdfFile(const std::vector<TPad*>&, const char* fileName);
 private:
   template <class T>
   static void appendToVector(std::vector<T*>& objects, const std::vector<T*>& newObjects) {

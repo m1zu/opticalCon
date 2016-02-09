@@ -141,17 +141,17 @@ TGraphErrors* Helpers::meanGraphFromHistogram(const TH2* histogram, int minEntri
   return graph;
 }
 
-void Helpers::setFontSize(TH2* h, double size, double titleOffset)
+void Helpers::setFontSize(TH2* h, double size, double titleOffsetX, double titleOffsetY)
 {
-  setFontSize<TH2>(h, size, titleOffset);
+  setFontSize<TH2>(h, size, titleOffsetX, titleOffsetY);
   h->GetZaxis()->SetLabelSize(size);
   h->GetZaxis()->SetTitleSize(size);
-  h->GetZaxis()->SetTitleOffset(size);
+  h->GetZaxis()->SetTitleOffset(titleOffsetY);
   TPaletteAxis* palette = static_cast<TPaletteAxis*>(h->GetListOfFunctions()->FindObject("palette"));
   if (palette) {
     palette->SetLabelSize(size);
     palette->SetTitleSize(size);
-    palette->SetTitleOffset(titleOffset);
+    palette->SetTitleOffset(titleOffsetY);
   }
 }
 
@@ -269,4 +269,17 @@ void Helpers::RedrawFrameBox()
   TBox* box = new TBox(f->GetX1(), f->GetY1(), f->GetX2(), f->GetY2());
   box->SetFillStyle(0);
   box->Draw();
+}
+
+void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const char* fileName)
+{
+  for (unsigned int i = 0; i < canvases.size(); ++i) {
+    QString option = fileName;
+    if (i == 0) {
+      option+= "(";
+    } else if (i == canvases.size() - 1) {
+      option+= ")";
+    }
+    canvases[i]->Print(qPrintable(option));
+  }
 }
