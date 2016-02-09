@@ -71,6 +71,9 @@ public:
     std::vector<T*> objects;
 
     if (dynamic_cast<T*>(object) && QString(object->GetName()).contains(nameFilter))
+      qDebug() << "Found" << object->ClassName() << object->GetName() << object->GetTitle();
+
+    if (dynamic_cast<T*>(object) && QString(object->GetName()).contains(nameFilter))
       objects.push_back(static_cast<T*>(object));
 
     if (object->InheritsFrom("TPad")) {
@@ -108,6 +111,8 @@ public:
   }
   static void setFontSize(TH2* h, double size, double titleOffset = -1);
 
+  static void setPalettePosition(TH2* h, double x1 = 0.905, double x2 = 0.915);
+
   static void scaleHistogramSlices(TH2*, ProjectionAxis = ProjectionY);
 
   static TGraphErrors* meanGraphFromHistogram(const TH2* histogram, int minEntries=100, double xError=0, bool alongX=true);
@@ -115,6 +120,8 @@ public:
   static void combineGraphs(TGraphErrors* graph1, const TGraphErrors* graph2);
 
   static TH1D* projection(ProjectionAxis, const TH2*, const char* name = "_px", int firstBin = 0, int lastBin = -1, Option_t* = "");
+
+  static void RedrawFrameBox();
 private:
   template <class T>
   static void appendToVector(std::vector<T*>& objects, const std::vector<T*>& newObjects) {

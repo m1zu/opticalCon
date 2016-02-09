@@ -2,6 +2,7 @@
 
 #include <TColor.h>
 #include <TPaletteAxis.h>
+#include <TFrame.h>
 
 void Helpers::setRootStyle()
 {
@@ -12,6 +13,7 @@ void Helpers::setRootStyle()
   gStyle->SetCanvasDefW(1100 * 16 / 10);
   gStyle->SetStripDecimals(false);
   gStyle->SetFrameFillColor(0);
+  gStyle->SetFrameBorderMode(0);
   gStyle->SetPadColor(0);
   gStyle->SetCanvasColor(0);
   gStyle->SetTitleH(0.06);
@@ -25,7 +27,7 @@ void Helpers::setRootStyle()
   gStyle->SetLegendBorderSize(1);
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(111);
-  gStyle->SetLineScalePS(0.4);
+  gStyle->SetLineScalePS(1.0);
   gStyle->SetHistLineWidth(3);
   gStyle->SetTitleFontSize(.1);
   gStyle->SetLabelOffset(0, "XYZ");
@@ -49,7 +51,6 @@ void Helpers::setRootStyle()
   gStyle->SetMarkerStyle(kFullCircle);
   gStyle->SetPaintTextFormat(".2f");
   gStyle->SetNumberContours(99);
-  gStyle->SetFrameBorderMode(0);
 
   TColor::InitializeColors();
   double stops[9] = { 0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000};
@@ -151,11 +152,16 @@ void Helpers::setFontSize(TH2* h, double size, double titleOffset)
     palette->SetLabelSize(size);
     palette->SetTitleSize(size);
     palette->SetTitleOffset(titleOffset);
+  }
+}
+
+void Helpers::setPalettePosition(TH2* h, double x1, double x2)
+{
+  TPaletteAxis* palette = static_cast<TPaletteAxis*>(h->GetListOfFunctions()->FindObject("palette"));
+  if (palette) {
     palette->GetAxis()->SetTickSize(gStyle->GetTickLength("Y"));
-    palette->SetX1NDC(0.905);
-    palette->SetX2NDC(0.915);
-    palette->SetY1NDC(0.1);
-    palette->SetY2NDC(0.9);
+    palette->SetX1NDC(x1);
+    palette->SetX2NDC(x2);
   }
 }
 
@@ -251,4 +257,16 @@ TH1D* Helpers::projection(ProjectionAxis axis, const TH2* h, const char* name, i
     assert(false);
   }
   return projection;
+}
+
+void Helpers::RedrawFrameBox()
+{
+  gPad->Modified();
+  gPad->Update();
+  TFrame* f = gPad->GetFrame();
+  if (!f)
+    return;
+  TBox* box = new TBox(f->GetX1(), f->GetY1(), f->GetX2(), f->GetY2());
+  box->SetFillStyle(0);
+  box->Draw();
 }
