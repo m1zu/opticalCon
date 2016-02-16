@@ -123,7 +123,7 @@ public:
 
   static TH1D* projection(ProjectionAxis, const TH2*, const char* name = "_px", int firstBin = 0, int lastBin = -1, Option_t* = "");
 
-  static void RedrawFrameBox();
+  static void redrawFrameBox();
 
   static void writePdfFile(const std::vector<TPad*>&, const QString& fileName);
 private:

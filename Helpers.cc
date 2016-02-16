@@ -259,7 +259,7 @@ TH1D* Helpers::projection(ProjectionAxis axis, const TH2* h, const char* name, i
   return projection;
 }
 
-void Helpers::RedrawFrameBox()
+void Helpers::redrawFrameBox()
 {
   gPad->Modified();
   gPad->Update();
