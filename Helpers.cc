@@ -39,7 +39,7 @@ void Helpers::setRootStyle()
   gStyle->SetTitleFont(fontStyle, "XYZ");
   gStyle->SetTitleSize(fontSize, "XYZ");
   gStyle->SetTitleOffset(2.5, "XYZ");
-  gStyle->SetTickLength(0.005, "YZ");
+  gStyle->SetTickLength(0.010, "YZ");
   gStyle->SetTickLength(gStyle->GetTickLength("Y") * gStyle->GetCanvasDefW() / gStyle->GetCanvasDefH(), "X");
   gStyle->SetPadGridX(1);
   gStyle->SetPadGridY(1);
@@ -271,7 +271,7 @@ void Helpers::RedrawFrameBox()
   box->Draw();
 }
 
-void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const char* fileName)
+void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const QString& fileName)
 {
   for (unsigned int i = 0; i < canvases.size(); ++i) {
     QString option = fileName;

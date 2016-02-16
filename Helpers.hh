@@ -7,6 +7,8 @@
 #include <TROOT.h>
 #include <TStyle.h>
 #include <TFile.h>
+#include <TTree.h>
+#include <TChain.h>
 #include <TMath.h>
 #include <TPad.h>
 #include <TCanvas.h>
@@ -123,7 +125,7 @@ public:
 
   static void RedrawFrameBox();
 
-  static void writePdfFile(const std::vector<TPad*>&, const char* fileName);
+  static void writePdfFile(const std::vector<TPad*>&, const QString& fileName);
 private:
   template <class T>
   static void appendToVector(std::vector<T*>& objects, const std::vector<T*>& newObjects) {
