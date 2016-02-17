@@ -157,6 +157,7 @@ void Helpers::setFontSize(TH2* h, double size, double titleOffsetX, double title
 
 void Helpers::setPalettePosition(TH2* h, double x1, double x2)
 {
+  gPad->Update();
   TPaletteAxis* palette = static_cast<TPaletteAxis*>(h->GetListOfFunctions()->FindObject("palette"));
   if (palette) {
     palette->GetAxis()->SetTickSize(gStyle->GetTickLength("Y"));
