@@ -195,7 +195,8 @@ void Helpers::drawAndFitProjection(RootPadEvent event, TVirtualPad* destinationP
   if (f)
     f->draw("SAME");
   gPad->Update();
-  previousPad->cd();
+  if (previousPad)
+    previousPad->cd();
 }
 
 TGraphErrors* Helpers::correlateGraphs(const TGraphErrors* graph1, const TGraphAsymmErrors* graph2)

@@ -64,7 +64,8 @@ public:
     for (unsigned int i = 0; i < objects.size(); ++i)
       objectClones[i] = static_cast<T*>(objects[i]->Clone());
     file.Close();
-    pad->cd();
+    if (pad)
+      pad->cd();
     return objectClones;
   }
 
