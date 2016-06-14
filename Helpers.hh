@@ -32,6 +32,16 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <QStringList>
+#include <QVector>
+#include <QMap>
+#include <QList>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QTextStream>
+#include <QTime>
+#include <QDateTime>
 #include <QRegExp>
 #include <QDebug>
 
