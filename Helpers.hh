@@ -134,9 +134,12 @@ public:
 
   static TH1D* projection(ProjectionAxis, const TH2*, const char* name = "_px", int firstBin = 0, int lastBin = -1, Option_t* = "");
 
+  static TLatex* drawLatex(const QString& text, double x, double y, double fontSize = 16, Qt::Alignment = Qt::AlignLeft | Qt::AlignBottom);
   static void redrawFrameBox();
+  static std::vector<TPad*> dividePad(TVirtualPad*, const std::vector<double>& colPositions, const std::vector<double>& rowPositions = {});
 
   static void writePdfFile(const std::vector<TPad*>&, const QString& fileName);
+  static void writeRootFile(const std::vector<TPad*>&, const QString& fileName);
 private:
   template <class T>
   static void appendToVector(std::vector<T*>& objects, const std::vector<T*>& newObjects) {

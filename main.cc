@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv) {
   TApplication application("analysis", &argc, argv);
+  //TH1::AddDirectory(false);
   Helpers::setRootStyle();
 
   TCanvas* canvas = new TCanvas("canvas", "canvas");

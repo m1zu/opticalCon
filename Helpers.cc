@@ -273,6 +273,62 @@ void Helpers::redrawFrameBox()
   box->Draw();
 }
 
+std::vector<TPad*> Helpers::dividePad(TVirtualPad* mother, const std::vector<double>& colPositions, const std::vector<double>& rowPositions)
+{
+  std::vector<TPad*> newPads;
+  if (!rowPositions.size() && !colPositions.size())
+    return newPads;
+  TVirtualPad* previousPad = gPad;
+  mother->Clear();
+  mother->cd();
+  for (unsigned int row = 1; row < rowPositions.size(); ++row)
+    assert(rowPositions[row - 1] < rowPositions[row]);
+  for (unsigned int col = 1; col < colPositions.size(); ++col)
+    assert(colPositions[col - 1] < colPositions[col]);
+  int i = 0;
+  for (unsigned int row = 0; row <= rowPositions.size(); ++row) {
+    for (unsigned int col = 0; col <= colPositions.size(); ++col) {
+      ++i;
+      QString name = QString("%1_%2").arg(mother->GetName()).arg(i);
+      double x1 = (col == 0) ? 0 : colPositions[col - 1];
+      double y1 = (row == rowPositions.size()) ? 0 : 1. - rowPositions[row];
+      double x2 = (col == colPositions.size()) ? 1 : colPositions[col];
+      double y2 = (row == 0) ? 1 : 1. - rowPositions[row - 1];
+      assert(0. <= x1 && x1 <= 1.);
+      assert(0. <= x2 && x2 <= 1.);
+      assert(0. <= y1 && y1 <= 1.);
+      assert(0. <= y2 && y2 <= 1.);
+      assert(x1 < x2);
+      assert(y1 < y2);
+      TPad* pad = new TPad(qPrintable(name), qPrintable(name), x1, y1, x2, y2);
+      pad->SetNumber(i);
+      pad->Draw();
+      newPads.push_back(pad);
+    }
+  }
+  previousPad->cd();
+  return newPads;
+}
+
+TLatex* Helpers::drawLatex(const QString& text, double x, double y, double fontSize, Qt::Alignment alignment)
+{
+  TLatex* latex = new TLatex(x, y, qPrintable(text));
+  latex->SetNDC();
+  latex->SetTextFont(83);
+  int h = 0;
+  if (alignment.testFlag(Qt::AlignLeft)) h = 1;
+  if (alignment.testFlag(Qt::AlignHCenter)) h = 2;
+  if (alignment.testFlag(Qt::AlignRight)) h = 3;
+  int v = 0;
+  if (alignment.testFlag(Qt::AlignTop)) v = 1;
+  if (alignment.testFlag(Qt::AlignVCenter)) v = 2;
+  if (alignment.testFlag(Qt::AlignBottom)) v = 3;
+  latex->SetTextAlign(10 * h + v);
+  latex->SetTextSize(fontSize);
+  latex->Draw();
+  return latex;
+}
+
 void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const QString& fileName)
 {
   for (unsigned int i = 0; i < canvases.size(); ++i) {
@@ -284,4 +340,12 @@ void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const QString& fi
     }
     canvases[i]->Print(qPrintable(option));
   }
+}
+
+void Helpers::writeRootFile(const std::vector<TPad*>& canvases, const QString& fileName)
+{
+  TFile file(qPrintable(fileName), "RECREATE");
+  for (auto canvas: canvases)
+    file.WriteTObject(canvas);
+  file.Close();
 }
