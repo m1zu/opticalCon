@@ -112,7 +112,7 @@ public:
   }
 
   template <class T>
-  static void setFontSize(T* h, double size, double titleOffsetX = -1, double titleOffsetY = -1) {
+  static void setFontSize(T* h, double size, double titleOffsetX = -1, double titleOffsetY = -1, int font = -1) {
     h->GetXaxis()->SetLabelSize(size);
     h->GetYaxis()->SetLabelSize(size);
     h->GetXaxis()->SetTitleSize(size);
@@ -121,8 +121,14 @@ public:
     h->GetYaxis()->SetTitleOffset(titleOffsetY < 0 ? 30. / size : titleOffsetY);
     h->GetYaxis()->SetTickLength(gStyle->GetTickLength("Y"));
     h->GetXaxis()->SetTickLength(h->GetYaxis()->GetTickLength() * gStyle->GetCanvasDefW() / gStyle->GetCanvasDefH());
+    if (font > 0) {
+      h->GetYaxis()->SetTitleFont(font);
+      h->GetXaxis()->SetTitleFont(font);
+      h->GetXaxis()->SetLabelFont(font);
+      h->GetYaxis()->SetLabelFont(font);
+    }
   }
-  static void setFontSize(TH2* h, double size, double titleOffsetX = -1, double titleOffsetY = -1);
+  static void setFontSize(TH2* h, double size, double titleOffsetX = -1, double titleOffsetY = -1, int font = -1);
 
   static void setPalettePosition(TH2* h, double x1 = 0.905, double x2 = 0.915);
 

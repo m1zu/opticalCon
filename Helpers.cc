@@ -141,17 +141,25 @@ TGraphErrors* Helpers::meanGraphFromHistogram(const TH2* histogram, int minEntri
   return graph;
 }
 
-void Helpers::setFontSize(TH2* h, double size, double titleOffsetX, double titleOffsetY)
+void Helpers::setFontSize(TH2* h, double size, double titleOffsetX, double titleOffsetY, int font)
 {
-  setFontSize<TH2>(h, size, titleOffsetX, titleOffsetY);
+  setFontSize<TH2>(h, size, titleOffsetX, titleOffsetY, font);
   h->GetZaxis()->SetLabelSize(size);
   h->GetZaxis()->SetTitleSize(size);
   h->GetZaxis()->SetTitleOffset(titleOffsetY);
+  if (font > 0) {
+    h->GetZaxis()->SetTitleFont(font);
+    h->GetZaxis()->SetLabelFont(font);
+  }
   TPaletteAxis* palette = static_cast<TPaletteAxis*>(h->GetListOfFunctions()->FindObject("palette"));
   if (palette) {
     palette->SetLabelSize(size);
     palette->SetTitleSize(size);
     palette->SetTitleOffset(titleOffsetY);
+    if (font > 0) {
+      palette->GetAxis()->SetLabelFont(font);
+      palette->GetAxis()->SetTitleFont(font);
+    }
   }
 }
 
