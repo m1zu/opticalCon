@@ -124,7 +124,7 @@ void Helpers::scaleHistogramSlices(TH2* histogram, ProjectionAxis axis)
 TGraphErrors* Helpers::meanGraphFromHistogram(const TH2* histogram, int minEntries, double xError, bool alongX)
 {
   TGraphErrors* graph = new TGraphErrors();
-  TAxis* axis = alongX ? histogram->GetXaxis() : histogram->GetYaxis();
+  const TAxis* axis = alongX ? histogram->GetXaxis() : histogram->GetYaxis();
   for (int bin = 1; bin <= axis->GetNbins(); ++bin) {
     TH1D* slice = projection(alongX ? ProjectionX : ProjectionY, histogram, alongX ? "_px" : "_py", bin, bin);
     if (slice->GetEntries() >= minEntries) {

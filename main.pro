@@ -9,6 +9,7 @@ SOURCES += \
 CLASSES+= \
   Helpers \
   ProgressBar \
+  Functions \
   RootExecFunctionWrapper
 
 for(class, CLASSES) {

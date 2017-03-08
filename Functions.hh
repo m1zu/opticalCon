@@ -1,5 +1,5 @@
-#ifndef Function_h
-#define FUNCTION_HH
+#ifndef InitializableFunction_HH
+#define InitializableFunction_HH
 
 #include <TF1.h>
 
