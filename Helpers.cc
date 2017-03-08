@@ -244,25 +244,25 @@ TH1D* Helpers::projection(ProjectionAxis axis, const TH2* h, const char* name, i
   if (axis == ProjectionX) {
     int f = h->GetXaxis()->GetFirst();
     int l = h->GetXaxis()->GetLast();
-    h->GetXaxis()->SetRange();
+    const_cast<TAxis*>(h->GetXaxis())->SetRange();
     projection = h->ProjectionX(name, firstBin, lastBin, option);
     projection->SetTitle(qPrintable(QString("bin %1..%2 #rightarrow %3..%4")
       .arg(firstBin).arg(lastBin)
       .arg(h->GetYaxis()->GetBinLowEdge(firstBin), 0, 'f', 2)
       .arg(h->GetYaxis()->GetBinUpEdge(lastBin), 0, 'f', 2)));
     projection->GetXaxis()->SetRange(f, l);
-    h->GetXaxis()->SetRange(f, l);
+    const_cast<TAxis*>(h->GetXaxis())->SetRange(f, l);
   } else if (axis == ProjectionY) {
     int f = h->GetYaxis()->GetFirst();
     int l = h->GetYaxis()->GetLast();
-    h->GetYaxis()->SetRange();
+    const_cast<TAxis*>(h->GetYaxis())->SetRange();
     projection = h->ProjectionY(name, firstBin, lastBin, option);
     projection->SetTitle(qPrintable(QString("bin %1..%2 #rightarrow %3..%4")
       .arg(firstBin).arg(lastBin)
       .arg(h->GetXaxis()->GetBinLowEdge(firstBin), 0, 'f', 2)
       .arg(h->GetXaxis()->GetBinUpEdge(lastBin), 0, 'f', 2)));
     projection->GetXaxis()->SetRange(f, l);
-    h->GetYaxis()->SetRange(f, l);
+    const_cast<TAxis*>(h->GetYaxis())->SetRange(f, l);
   } else {
     assert(false);
   }
