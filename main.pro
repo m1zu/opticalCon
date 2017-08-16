@@ -1,7 +1,7 @@
 TARGET = dummyRootProject
 TEMPLATE = app
 CONFIG += qt debug warn_on
-QMAKE_CXXFLAGS+= -std=c++11
+QMAKE_CXXFLAGS+= -std=c++11 -Wno-deprecated-register
 
 SOURCES += \
   main.cc
