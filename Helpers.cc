@@ -341,10 +341,12 @@ void Helpers::writePdfFile(const std::vector<TPad*>& canvases, const QString& fi
 {
   for (unsigned int i = 0; i < canvases.size(); ++i) {
     QString option = fileName;
-    if (i == 0) {
-      option+= "(";
-    } else if (i == canvases.size() - 1) {
-      option+= ")";
+    if (canvases.size() > 1) {
+      if (i == 0) {
+        option+= "(";
+      } else if (i == canvases.size() - 1) {
+        option+= ")";
+      }
     }
     canvases[i]->Print(qPrintable(option));
   }
