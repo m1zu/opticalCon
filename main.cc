@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
   /* extracting median, error on median, position from files */
 
-  QString filepath = ("/home/dami/master/opticalCon/4TSAACFIM00127/noMirror/");
+  QString filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/noMirror/");
   QStringList files = QDir(filepath).entryList(QStringList() << "*AZ*.root");
   const int nFiles = files.count();
   qDebug() << endl << "using" << nFiles << " files before cut.. ";
@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
 
   /* reading Files with optical Connection */
 
-  filepath = ("/home/dami/master/opticalCon/4TSAACFIM00127/conNoMirror/");
+  filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/conNoMirror/");
   files = QDir(filepath).entryList(QStringList() << "*posA*.root");
   const int nCon = files.count();
   qDebug() << endl << "using" << nCon << "files with optical connection.. ";
