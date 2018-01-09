@@ -243,12 +243,12 @@ int main(int argc, char** argv) {
   g1->Draw("ape");
   g1_con->Draw("pe same");
 
-  TLegend* l1 = new TLegend(.12,.15,.4,.33);
-  l1->AddEntry(g1 ,"fiberMat", "pe");
-  l1->AddEntry(g1_con ,"fiberMat with opticalCon", "pe");
-  l1->Draw("SAME");
-
   std::vector<TF1*> mean_function_vec = doubleExpFit_Fresnel(g1, g1_con);
+
+  TLegend* l1 = new TLegend(.55,.65,.9,.9);
+  l1->AddEntry(mean_function_vec[0] ,"fiberMat before cut", "l");
+  l1->AddEntry(mean_function_vec[1] ,"fiberMat with opticalCon", "l");
+  l1->Draw("SAME");
 
   TCanvas* c2 = new TCanvas("c2", "c2");
   c2->cd();
@@ -268,27 +268,64 @@ int main(int argc, char** argv) {
   g2->Draw("ape");
   g2_con->Draw("pe same");
 
-  TLegend* l2 = new TLegend(.12,.15,.4,.33);
-  l2->AddEntry(g2 ,"fiberMat", "pe");
-  l2->AddEntry(g2_con ,"fiberMat with opticalCon", "pe");
-  l2->Draw("SAME");
-
   std::vector<TF1*> median_function_vec = doubleExpFit_Fresnel(g2, g2_con);
 
+  TLegend* l2 = new TLegend(.55,.65,.9,.9);
+  l2->AddEntry(median_function_vec[0] ,"fiberMat before cut", "l");
+  l2->AddEntry(median_function_vec[1] ,"fiberMat with opticalCon", "l");
+  l2->Draw("SAME");
+
   /* evaluation optical connection */
-  const int nSamples = 180;
+  const int nSamples = 100;
   Double_t* ratioMean = new Double_t[nSamples];
+  Double_t* ratioMedian = new Double_t[nSamples];
   Double_t* posRatio = new Double_t[nSamples];
 
+  TF1* shortMat_mean = new TF1("shortMat_mean", "[0]*((1-[2])*exp(-x/[1])+[2]*exp(-x/[3]))+ [0]*[4]*((1-[2])*exp(-(237.35*2-x)/[1])+[2]*exp(-(237.35*2-x)/[3]))", 0., 200.);
+  shortMat_mean->SetParameters(mean_function_vec[0]->GetParameter(0),
+          mean_function_vec[0]->GetParameter(1),
+          mean_function_vec[0]->GetParameter(2),
+          mean_function_vec[0]->GetParameter(3),
+          mean_function_vec[0]->GetParameter(4));
+
+  TF1* shortMat_median = new TF1("shortMat_median", "[0]*((1-[2])*exp(-x/[1])+[2]*exp(-x/[3]))+ [0]*[4]*((1-[2])*exp(-(237.35*2-x)/[1])+[2]*exp(-(237.35*2-x)/[3]))", 0., 200.);
+  shortMat_median->SetParameters(median_function_vec[0]->GetParameter(0),
+          median_function_vec[0]->GetParameter(1),
+          median_function_vec[0]->GetParameter(2),
+          median_function_vec[0]->GetParameter(3),
+          median_function_vec[0]->GetParameter(4));
+
   for (int i=0; i<nSamples; ++i){
-      posRatio[i] = double(i+20);
-      ratioMean[i] = mean_function_vec[1]->Eval(double(i+20)) /  mean_function_vec[0]->Eval(double(i+20));
+      posRatio[i] = double(i+40);
+      //double weight_mean = mean_function_vec[0]->Eval(double(i+40)) / shortMat_mean->Eval(double(i+40));
+      //double weight_median = median_function_vec[0]->Eval(double(i+40)) / shortMat_median->Eval(double(i+40));
+      ratioMean[i] = mean_function_vec[1]->Eval(double(i+40)) /  mean_function_vec[0]->Eval(double(i+40)); // * weight_mean
+      ratioMedian[i] = median_function_vec[1]->Eval(double(i+40)) /  median_function_vec[0]->Eval(double(i+40));  // * weight_median
   }
 
   TGraph* gRatioMean = new TGraph(nSamples, posRatio, ratioMean);
   TCanvas* c3 = new TCanvas("c3", "c3");
   c3->cd();
-  gRatioMean->Draw("apl");
+  gRatioMean->SetTitle("");
+  gRatioMean->GetXaxis()->SetTitle("distance to SiPM / cm");
+  gRatioMean->GetXaxis()->SetTitleOffset(1.15);
+  gRatioMean->GetXaxis()->SetTitleSize(20);
+  gRatioMean->GetYaxis()->SetTitleOffset(1.25);
+  gRatioMean->GetYaxis()->SetTitleSize(20);
+  gRatioMean->GetYaxis()->SetTitle("signal value ratio");
+  gRatioMean->Draw("ap");
+
+  TGraph* gRatioMedian = new TGraph(nSamples, posRatio, ratioMedian);
+  TCanvas* c4 = new TCanvas("c4", "c4");
+  c4->cd();
+  gRatioMedian->SetTitle("");
+  gRatioMedian->GetXaxis()->SetTitle("distance to SiPM / cm");
+  gRatioMedian->GetXaxis()->SetTitleOffset(1.15);
+  gRatioMedian->GetXaxis()->SetTitleSize(20);
+  gRatioMedian->GetYaxis()->SetTitleOffset(1.25);
+  gRatioMedian->GetYaxis()->SetTitleSize(20);
+  gRatioMedian->GetYaxis()->SetTitle("signal value ratio");
+  gRatioMedian->Draw("ap");
 
   application.Run();
   return 0;
