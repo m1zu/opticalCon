@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
 
   /* reading Files with optical Connection */
 
-  filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/conNoMirror/");
+  filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/conNoMirrorPlusFluid/");
   files = QDir(filepath).entryList(QStringList() << "*posA*.root");
   const int nCon = files.count();
   qDebug() << endl << "using" << nCon << "files with optical connection.. ";
