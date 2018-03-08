@@ -15,7 +15,7 @@ double meanLightYield(TH1D* h)
   int n = h->GetNbinsX();
   double* channelLightYield = &(h->GetArray()[1]);
 
-  // full range
+  // full range (except border channels)
   for (int i=0; i<n; ++i)
     if ((((i+1)%64)==0 || (i%64)==0))
       ; else mean+=channelLightYield[i];
