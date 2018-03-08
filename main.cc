@@ -33,6 +33,20 @@ double meanLightYield(TH1D* h)
   return mean;
 }
 
+double meanClusterWidth(TH1D* h)
+{
+    double mean=0;
+    int n = h->GetNbinsX();
+    double* channelClusterWidth = &(h->GetArray()[1]);
+
+    for (int i=0; i<n; ++i)
+      if ((((i+1)%64)==0 || (i%64)==0))
+        ; else mean+=channelClusterWidth[i];
+    mean /= double(n-16);
+
+    return mean;
+}
+
 double meanLightYieldError(TH1D* h)
 {
   double mean = meanLightYield(h);
@@ -148,8 +162,8 @@ int main(int argc, char** argv) {
 
   /* extracting median, error on median, position from files */
 
-  QString filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/noMirror/");
-  QStringList files = QDir(filepath).entryList(QStringList() << "*AZ*.root");
+  QString filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00387/noMirror/");
+  QStringList files = QDir(filepath).entryList(QStringList() << "*.root");
   const int nFiles = files.count();
   qDebug() << endl << "using" << nFiles << " files before cut.. ";
 
@@ -158,6 +172,7 @@ int main(int argc, char** argv) {
   Double_t* meanError = new Double_t[nFiles];
   Double_t* medianError = new Double_t[nFiles];
   Double_t* position = new Double_t[nFiles];
+  Double_t* clusterWidth = new Double_t[nFiles];
 
   int count = 0;
   foreach (QString file, files)
@@ -171,6 +186,9 @@ int main(int argc, char** argv) {
     position[count] = file.left(3).toDouble();
     meanError[count] = meanLightYieldError(hist);
     medianError[count] = medianLightYieldError(hist);
+
+    auto histw = Helpers::extractFromFile<TH1D>(fullPath, "cluster width value 0 HistogramDisplay").front();
+    clusterWidth[count] = meanClusterWidth(histw);
 
     count ++;
   }
@@ -187,7 +205,7 @@ int main(int argc, char** argv) {
 
   /* reading Files with optical Connection */
 
-  filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00127/conNoMirrorPlusFluid/");
+  filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00387/withConnectionAndFluid/");
   files = QDir(filepath).entryList(QStringList() << "*posA*.root");
   const int nCon = files.count();
   qDebug() << endl << "using" << nCon << "files with optical connection.. ";
@@ -197,6 +215,7 @@ int main(int argc, char** argv) {
   Double_t* meanError2 = new Double_t[nCon];
   Double_t* medianError2 = new Double_t[nCon];
   Double_t* position2 = new Double_t[nCon];
+  Double_t* clusterWidth2 = new Double_t[nCon];
 
   count = 0;
   foreach (QString file, files)
@@ -210,6 +229,9 @@ int main(int argc, char** argv) {
     position2[count] = file.left(3).toDouble();
     meanError2[count] = meanLightYieldError(hist);
     medianError2[count] = medianLightYieldError(hist);
+
+    auto histw = Helpers::extractFromFile<TH1D>(fullPath, "cluster width value 0 HistogramDisplay").front();
+    clusterWidth2[count] = meanClusterWidth(histw);
 
     count ++;
   }
@@ -231,12 +253,12 @@ int main(int argc, char** argv) {
   TGraphErrors* g1_con = new TGraphErrors(nCon, position2, mean2, positionError2, meanError2);
   g1->SetTitle("Mean light yield");
   g1->GetXaxis()->SetTitle("distance to SiPM [cm]");
-  g1->GetXaxis()->SetTitleOffset(1.25);
-  g1->GetXaxis()->SetTitleSize(20);
-  g1->GetXaxis()->SetLabelSize(20);
-  g1->GetYaxis()->SetTitleOffset(1.15);
-  g1->GetYaxis()->SetTitleSize(20);
-  g1->GetYaxis()->SetLabelSize(20);
+  g1->GetXaxis()->SetTitleOffset(1.00);
+  g1->GetXaxis()->SetTitleSize(30);
+  g1->GetXaxis()->SetLabelSize(30);
+  g1->GetYaxis()->SetTitleOffset(.8);
+  g1->GetYaxis()->SetTitleSize(30);
+  g1->GetYaxis()->SetLabelSize(30);
   g1->GetYaxis()->SetTitle("mean channel signal value [pixel]");
   g1->GetYaxis()->SetRangeUser(8.,26.);
   g1->GetXaxis()->SetLimits(0.,230.);
@@ -256,12 +278,12 @@ int main(int argc, char** argv) {
   TGraphErrors* g2_con = new TGraphErrors(nCon, position2, median2, positionError2, medianError2);
   g2->SetTitle("Median light yield");
   g2->GetXaxis()->SetTitle("distance to SiPM [cm]");
-  g2->GetXaxis()->SetTitleOffset(1.15);
-  g2->GetXaxis()->SetTitleSize(20);
-  g2->GetXaxis()->SetLabelSize(20);
-  g2->GetYaxis()->SetTitleOffset(1.25);
-  g2->GetYaxis()->SetTitleSize(20);
-  g2->GetYaxis()->SetLabelSize(20);
+  g2->GetXaxis()->SetTitleOffset(1.00);
+  g2->GetXaxis()->SetTitleSize(30);
+  g2->GetXaxis()->SetLabelSize(30);
+  g2->GetYaxis()->SetTitleOffset(.8);
+  g2->GetYaxis()->SetTitleSize(30);
+  g2->GetYaxis()->SetLabelSize(30);
   g2->GetYaxis()->SetTitle("median channel signal value [pixel]");
   g2->GetYaxis()->SetRangeUser(8., 26.);
   g2->GetXaxis()->SetLimits(0., 230.);
@@ -276,7 +298,7 @@ int main(int argc, char** argv) {
   l2->Draw("SAME");
 
   /* evaluation optical connection */
-  const int nSamples = 100;
+  const int nSamples = 150;
   Double_t* ratioMean = new Double_t[nSamples];
   Double_t* ratioMedian = new Double_t[nSamples];
   Double_t* posRatio = new Double_t[nSamples];
@@ -306,26 +328,49 @@ int main(int argc, char** argv) {
   TGraph* gRatioMean = new TGraph(nSamples, posRatio, ratioMean);
   TCanvas* c3 = new TCanvas("c3", "c3");
   c3->cd();
-  gRatioMean->SetTitle("");
+  gRatioMean->SetTitle("Ratio of signals with/without c onnection piece");
   gRatioMean->GetXaxis()->SetTitle("distance to SiPM / cm");
-  gRatioMean->GetXaxis()->SetTitleOffset(1.15);
-  gRatioMean->GetXaxis()->SetTitleSize(20);
-  gRatioMean->GetYaxis()->SetTitleOffset(1.25);
-  gRatioMean->GetYaxis()->SetTitleSize(20);
-  gRatioMean->GetYaxis()->SetTitle("signal value ratio");
+  gRatioMean->GetXaxis()->SetTitleOffset(1.0);
+  gRatioMean->GetXaxis()->SetTitleSize(30);
+  gRatioMean->GetYaxis()->SetTitleOffset( .8);
+  gRatioMean->GetYaxis()->SetTitleSize(30);
+  gRatioMean->GetYaxis()->SetTitle("signal value ratio (mean values)");
   gRatioMean->Draw("ap");
 
   TGraph* gRatioMedian = new TGraph(nSamples, posRatio, ratioMedian);
   TCanvas* c4 = new TCanvas("c4", "c4");
   c4->cd();
-  gRatioMedian->SetTitle("");
+  gRatioMedian->SetTitle("Ratio of signals with/without connection piece");
   gRatioMedian->GetXaxis()->SetTitle("distance to SiPM / cm");
-  gRatioMedian->GetXaxis()->SetTitleOffset(1.15);
-  gRatioMedian->GetXaxis()->SetTitleSize(20);
-  gRatioMedian->GetYaxis()->SetTitleOffset(1.25);
-  gRatioMedian->GetYaxis()->SetTitleSize(20);
-  gRatioMedian->GetYaxis()->SetTitle("signal value ratio");
+  gRatioMedian->GetXaxis()->SetTitleOffset(1.0);
+  gRatioMedian->GetXaxis()->SetTitleSize(30);
+  gRatioMedian->GetYaxis()->SetTitleOffset(.8);
+  gRatioMedian->GetYaxis()->SetTitleSize(30);
+  gRatioMedian->GetYaxis()->SetTitle("signal value ratio (median values)");
   gRatioMedian->Draw("ap");
+
+  TGraph* gCluster = new TGraph(nFiles, position, clusterWidth);
+  TGraph* gClusterCon = new TGraph(nCon, position2, clusterWidth2);
+  TCanvas* c5 = new TCanvas("c5", "c5");
+  c5->cd();
+  gCluster->SetTitle("Mean cluster width");
+  gCluster->GetXaxis()->SetTitle("distance to SiPM / cm");
+  gCluster->GetXaxis()->SetTitleOffset(1.0);
+  gCluster->GetXaxis()->SetTitleSize(30);
+  gCluster->GetYaxis()->SetTitleOffset(.8);
+  gCluster->GetYaxis()->SetTitleSize(30);
+  gCluster->GetYaxis()->SetTitle("mean cluster width (all channels)");
+  gCluster->GetYaxis()->SetRangeUser(2.2, 3.0);
+  gCluster->SetMarkerColor(kRed);
+  gClusterCon->SetMarkerColor(kBlue);
+  gCluster->Draw("ap");
+  gClusterCon->Draw("same p");
+
+  TLegend* l3 = new TLegend(.60,.65,.9,.9);
+  l3->AddEntry(gCluster ,"fiberMat before cut", "p");
+  l3->AddEntry(gClusterCon ,"fiberMat with opticalCon", "p");
+  l3->Draw("SAME");
+
 
   application.Run();
   return 0;
