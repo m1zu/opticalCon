@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 
   /* extracting median, error on median, position from files */
 
-  QString filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00387/noMirror/");
+  QString filepath = ("/home/iwanicki/sw/opticalCon/data/4TSAACFIM00387/noMirror/"); // TODO: GET Correct DATA and set path here and elsewhere KEK
   QStringList files = QDir(filepath).entryList(QStringList() << "*.root");
   const int nFiles = files.count();
   qDebug() << endl << "using" << nFiles << " files before cut.. ";
